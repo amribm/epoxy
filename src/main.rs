@@ -51,7 +51,7 @@ impl EpoxyService {
     async fn start(&self) -> Result<(),AppError> {
         let mut handler_set = tokio::task::JoinSet::new();
         for app_config in self.app_config_list.iter() {
-           let app = Application::try_from(app_config.clone())?;
+           let mut app = Application::try_from(app_config.clone())?;
             let app_handle =tokio::task::spawn(async move {
                 if let Err(e) = app.start().await {
                     println!("error occured at start: {}",e)
