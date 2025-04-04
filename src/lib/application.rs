@@ -55,7 +55,16 @@ impl Application {
         loop {
             let mut  socket = request_rx.recv().await.ok_or(AppError::ReciverError)?;
             let mut backend = self.get_backend().await?;
-            tokio::io::copy_bidirectional(&mut socket, &mut backend).await?;
+            tokio::task::spawn(async move {
+                match tokio::io::copy_bidirectional(&mut socket, &mut backend).await {
+                    Ok(_) => {
+                        println!("conn ended successfully");
+                    }
+                    Err(e) => {
+                        println!("conn ended with error: {}",e);
+                    }
+                }
+            });
         }
 
     }
